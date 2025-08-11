@@ -10,9 +10,16 @@ async function bootstrap() {
     origin:
       process.env.NODE_ENV === 'production'
         ? undefined
-        : [`${clientConfig().host}:${clientConfig().port}`],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+        : [
+            `http://${clientConfig().host}:${clientConfig().port}`,
+            `https://${clientConfig().host}:${clientConfig().port}`,
+          ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Apollo-Require-Preflight',
+    ],
     credentials: true,
   });
 
