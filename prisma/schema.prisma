@@ -8,10 +8,36 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model dev_post {
-  post_id    Int      @id @default(autoincrement())
-  post_name  String   @db.VarChar(100)
-  post_body  String?
-  created_at DateTime @default(now()) @db.Timestamp(6)
-  updated_at DateTime @default(now()) @db.Timestamp(6)
+model post_stats {
+  id         Int       @id @default(autoincrement())
+  post_id    Int?
+  views      Int?      @default(0)
+  likes      Int?      @default(0)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  posts      posts?    @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model post_tags {
+  post_id Int
+  tag_id  Int
+  posts   posts @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tags    tags  @relation(fields: [tag_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([post_id, tag_id])
+}
+
+model posts {
+  id         Int          @id @default(autoincrement())
+  slug       String       @unique @db.VarChar(255)
+  published  DateTime?    @db.Timestamptz(6)
+  updated_at DateTime?    @default(now()) @db.Timestamptz(6)
+  post_stats post_stats[]
+  post_tags  post_tags[]
+}
+
+model tags {
+  id         Int         @id @default(autoincrement())
+  tag_name   String      @unique @db.VarChar(60)
+  created_at DateTime?   @default(now()) @db.Timestamptz(6)
+  post_tags  post_tags[]
 }
