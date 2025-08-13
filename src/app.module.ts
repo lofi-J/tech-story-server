@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './build-sync/posts/posts.module';
+import { TagsModule } from './build-sync/tags/tags.module';
 import { PrismaService } from './prisma/prisma.service';
 import { SupabaseService } from './supabase/supabase.service';
 
@@ -13,6 +14,7 @@ import { SupabaseService } from './supabase/supabase.service';
       isGlobal: true,
     }),
     PostsModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [AppService, SupabaseService, PrismaService],
