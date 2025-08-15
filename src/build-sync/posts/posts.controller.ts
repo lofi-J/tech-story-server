@@ -10,6 +10,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { handlePrismaError, isPrismaError } from 'src/util/prisma';
 import type { CreatePostDto, UpdatePostDto } from './dto/post.dto';
 import { PostsService } from './posts.service';
 
@@ -18,73 +19,53 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  async createPost(@Body() createPostDto: CreatePostDto) {
-    try {
-      return await this.postsService.createPost(createPostDto);
-    } catch (error) {
-      console.error(error);
-      throw new HttpException('Failed to create post', HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  @Post('upsert')
   async upsertPost(@Body() createPostDto: CreatePostDto) {
     try {
-      return await this.postsService.upsertPost(createPostDto);
+      console.log('받은 데이터:', createPostDto);
+      const post = await this.postsService.upsertPost(createPostDto);
+      return {
+        ok: true,
+        status: 201,
+        data: post,
+      };
     } catch (error) {
-      console.error(error);
-      throw new HttpException('Failed to upsert post', HttpStatus.BAD_REQUEST);
+      console.error('Upsert 에러 상세:', error);
+      if (isPrismaError(error)) return handlePrismaError(error);
+      throw new HttpException('포스트 처리 실패', HttpStatus.BAD_REQUEST);
     }
   }
 
   @Put('bulk')
   async bulkUpsertPosts(@Body() posts: CreatePostDto[]) {
     try {
-      const results: any[] = [];
-      for (const post of posts) {
-        const result = await this.postsService.upsertPost(post);
-        results.push(result);
-      }
+      const results = await Promise.all(
+        posts.map((post) => this.postsService.upsertPost(post)),
+      );
       return {
-        message: `Successfully processed ${results.length} posts`,
+        ok: true,
+        status: 200,
+        message: `${results.length}개의 포스트를 성공적으로 처리했습니다`,
         data: results,
       };
     } catch (error) {
       console.error(error);
-      throw new HttpException(
-        'Failed to bulk upsert posts',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('대량 포스트 처리 실패', HttpStatus.BAD_REQUEST);
     }
   }
 
   @Get()
   async getAllPosts() {
     try {
-      return await this.postsService.getAllPosts();
+      const posts = await this.postsService.getAllPosts();
+      return {
+        ok: true,
+        status: 200,
+        data: posts,
+      };
     } catch (error) {
       console.error(error);
       throw new HttpException(
-        'Failed to retrieve posts',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  @Get(':id')
-  async getPost(@Param('id', ParseIntPipe) id: number) {
-    try {
-      const post = await this.postsService.getPost(id);
-      if (!post) {
-        throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
-      }
-      return post;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to retrieve post',
+        '포스트 목록 조회 실패',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -95,31 +76,47 @@ export class PostsController {
     try {
       const post = await this.postsService.getPostBySlug(slug);
       if (!post) {
-        throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          '포스트를 찾을 수 없습니다',
+          HttpStatus.NOT_FOUND,
+        );
       }
-      return post;
+      return {
+        ok: true,
+        status: 200,
+        data: post,
+      };
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
+      if (error instanceof HttpException) throw error;
       console.error(error);
       throw new HttpException(
-        'Failed to retrieve post',
+        '포스트 조회 실패',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  @Put(':id')
-  async updatePost(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updatePostDto: UpdatePostDto,
-  ) {
+  @Get(':id')
+  async getPost(@Param('id', ParseIntPipe) id: number) {
     try {
-      return await this.postsService.updatePost(id, updatePostDto);
+      const post = await this.postsService.getPost(id);
+      if (!post) {
+        throw new HttpException(
+          '포스트를 찾을 수 없습니다',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return {
+        ok: true,
+        status: 200,
+        data: post,
+      };
     } catch (error) {
-      console.error(error);
-      throw new HttpException('Failed to update post', HttpStatus.BAD_REQUEST);
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        '포스트 조회 실패',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -129,21 +126,36 @@ export class PostsController {
     @Body() updatePostDto: UpdatePostDto,
   ) {
     try {
-      return await this.postsService.updatePostBySlug(slug, updatePostDto);
+      const post = await this.postsService.updatePostBySlug(
+        slug,
+        updatePostDto,
+      );
+      return {
+        ok: true,
+        status: 200,
+        data: post,
+      };
     } catch (error) {
       console.error(error);
-      throw new HttpException('Failed to update post', HttpStatus.BAD_REQUEST);
+      throw new HttpException('포스트 업데이트 실패', HttpStatus.BAD_REQUEST);
     }
   }
 
-  @Delete(':id')
-  async deletePost(@Param('id', ParseIntPipe) id: number) {
+  @Put(':id')
+  async updatePost(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
     try {
-      await this.postsService.deletePost(id);
-      return { message: 'Post deleted successfully' };
+      const post = await this.postsService.updatePost(id, updatePostDto);
+      return {
+        ok: true,
+        status: 200,
+        data: post,
+      };
     } catch (error) {
       console.error(error);
-      throw new HttpException('Failed to delete post', HttpStatus.BAD_REQUEST);
+      throw new HttpException('포스트 업데이트 실패', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -151,10 +163,29 @@ export class PostsController {
   async deletePostBySlug(@Param('slug') slug: string) {
     try {
       await this.postsService.deletePostBySlug(slug);
-      return { message: 'Post deleted successfully' };
+      return {
+        ok: true,
+        status: 200,
+        message: '포스트가 성공적으로 삭제되었습니다',
+      };
     } catch (error) {
       console.error(error);
-      throw new HttpException('Failed to delete post', HttpStatus.BAD_REQUEST);
+      throw new HttpException('포스트 삭제 실패', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Delete(':id')
+  async deletePost(@Param('id', ParseIntPipe) id: number) {
+    try {
+      await this.postsService.deletePost(id);
+      return {
+        ok: true,
+        status: 200,
+        message: '포스트가 성공적으로 삭제되었습니다',
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException('포스트 삭제 실패', HttpStatus.BAD_REQUEST);
     }
   }
 }
