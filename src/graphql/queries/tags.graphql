@@ -1,0 +1,25 @@
+query GetAllTags($orderBy: TagsOrderBy = CREATED_AT) {
+  getAllTags(orderBy: $orderBy) {
+    id
+    tag_name
+    created_at
+    usage_count
+  }
+}
+
+query GetPopularTags($limit: Int = 10) {
+  popularTags(limit: $limit) {
+    id
+    tag_name
+    usage_count
+  }
+}
+
+query GetTagUsageStats {
+  tagUsageStats {
+    id
+    tag_name
+    usage_count
+    created_at
+  }
+}
