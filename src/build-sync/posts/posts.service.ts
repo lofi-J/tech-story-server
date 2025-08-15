@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { TagsService } from '../tags/tags.service';
 import { CreatePostDto, PostResponse, UpdatePostDto } from './dto/post.dto';
 
 @Injectable()
 export class PostsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private tagsService: TagsService,
+  ) {}
 
   async createPost(createPostDto: CreatePostDto): Promise<PostResponse> {
     const { tags, ...postData } = createPostDto;
@@ -110,6 +114,8 @@ export class PostsService {
     return posts.map((post) => ({
       id: post.id,
       slug: post.slug,
+      title: post.title,
+      hash_code: post.hash_code,
       published: post.published,
       updated_at: post.updated_at,
       tags: post.post_tags.map((pt) => pt.tags.tag_name),
@@ -141,17 +147,24 @@ export class PostsService {
       });
 
       if (!tag) {
-        tag = await this.prisma.tags.create({
-          data: { tag_name: tagName },
+        const createTagResponse = await this.tagsService.createTag({
+          tag_name: tagName,
         });
+        tag = createTagResponse.data as {
+          id: number;
+          tag_name: string;
+          created_at: Date | null;
+        };
       }
 
-      await this.prisma.post_tags.create({
-        data: {
-          post_id: postId,
-          tag_id: tag.id,
-        },
-      });
+      if (tag) {
+        await this.prisma.post_tags.create({
+          data: {
+            post_id: postId,
+            tag_id: tag.id,
+          },
+        });
+      }
     }
   }
 
@@ -174,9 +187,11 @@ export class PostsService {
     return {
       id: post.id,
       slug: post.slug,
+      title: post.title,
       published: post.published,
       updated_at: post.updated_at,
       tags: post.post_tags.map((pt) => pt.tags.tag_name),
+      hash_code: post.hash_code,
     };
   }
 }
