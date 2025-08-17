@@ -1,16 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 
-@ObjectType()
-export class Tag {
-  @Field(() => Int)
-  id: number;
-
-  @Field()
-  tag_name: string;
-
-  @Field({ nullable: true })
-  created_at?: Date;
-}
+// Tag 타입을 Tags로 통일하기 위해 import 사용
+import { Tags } from '../../tags/entities/tags.entity';
 
 @ObjectType()
 export class PostStats {
@@ -50,8 +41,8 @@ export class Post {
   @Field()
   hash_code: string; // BigInt를 문자열로 처리
 
-  @Field(() => [Tag], { nullable: true })
-  tags?: Tag[];
+  @Field(() => [Tags], { nullable: true })
+  tags?: Tags[];
 
   @Field(() => PostStats, { nullable: true })
   stats?: PostStats;

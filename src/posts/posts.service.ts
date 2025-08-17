@@ -56,7 +56,8 @@ export class PostsService {
         tags: post.post_tags.map((pt) => ({
           id: pt.tags.id,
           tag_name: pt.tags.tag_name,
-          created_at: pt.tags.created_at || undefined,
+          created_at: pt.tags.created_at || new Date(),
+          usage_count: undefined, // 필요시 계산 로직 추가
         })),
         stats: post.post_stats[0]
           ? {
@@ -137,7 +138,8 @@ export class PostsService {
         post.post_tags?.map((pt) => ({
           id: pt.tags.id,
           tag_name: pt.tags.tag_name,
-          created_at: pt.tags.created_at || undefined,
+          created_at: pt.tags.created_at || new Date(),
+          usage_count: undefined, // 필요시 계산 로직 추가
         })) || [],
       stats: post.post_stats?.[0]
         ? {
