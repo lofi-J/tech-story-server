@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './build-sync/posts/posts.module';
+import { PostsModule as GraphQLPostsModule } from './posts/posts.module';
 import { PrismaService } from './prisma/prisma.service';
 import { SupabaseService } from './supabase/supabase.service';
 import { TagsModule } from './tags/tags.module';
@@ -22,6 +23,7 @@ import { TagsModule } from './tags/tags.module';
       sortSchema: true,
     }),
     PostsModule,
+    GraphQLPostsModule,
     TagsModule,
   ],
   controllers: [AppController],
