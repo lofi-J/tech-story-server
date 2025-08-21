@@ -155,4 +155,74 @@ export class PostsService {
           },
     };
   }
+
+  async getPostsByTag(tagName: string) {
+    // 특정 태그를 가진 포스트들을 조회
+    const posts = await this.prisma.posts.findMany({
+      where: {
+        post_tags: {
+          some: {
+            tags: {
+              tag_name: tagName,
+            },
+          },
+        },
+      },
+      orderBy: {
+        published: 'desc',
+      },
+      include: {
+        post_tags: {
+          include: {
+            tags: true,
+          },
+        },
+        post_stats: true,
+      },
+    });
+
+    // 전체 개수 조회
+    const totalCount = await this.prisma.posts.count({
+      where: {
+        post_tags: {
+          some: {
+            tags: {
+              tag_name: tagName,
+            },
+          },
+        },
+      },
+    });
+
+    return {
+      posts: posts.map((post) => ({
+        id: post.id,
+        slug: post.slug,
+        title: post.title,
+        published: post.published || undefined,
+        updated_at: post.updated_at || undefined,
+        hash_code: post.hash_code.toString(),
+        tags: post.post_tags.map((pt) => ({
+          id: pt.tags.id,
+          tag_name: pt.tags.tag_name,
+          created_at: pt.tags.created_at || new Date(),
+          usage_count: undefined, // 필요시 계산 로직 추가
+        })),
+        stats: post.post_stats[0]
+          ? {
+              id: post.post_stats[0].id,
+              post_id: post.post_stats[0].post_id || undefined,
+              views: post.post_stats[0].views || 0,
+              likes: post.post_stats[0].likes || 0,
+              updated_at: post.post_stats[0].updated_at || undefined,
+            }
+          : {
+              views: 0,
+              likes: 0,
+            },
+      })),
+      totalCount,
+      hasMore: false, // 페이징을 구현하지 않았으므로 false로 설정
+    };
+  }
 }

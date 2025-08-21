@@ -18,4 +18,9 @@ export class PostsResolver {
   async getPostBySlug(@Args('slug') slug: string): Promise<Post | null> {
     return await this.postsService.getPostBySlug(slug);
   }
+
+  @Query(() => PostsResponse, { name: 'getPostsByTag' })
+  async getPostsByTag(@Args('tag') tag: string): Promise<PostsResponse> {
+    return await this.postsService.getPostsByTag(tag);
+  }
 }
