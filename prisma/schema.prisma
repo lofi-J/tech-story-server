@@ -27,14 +27,15 @@ model post_tags {
 }
 
 model posts {
-  id         Int          @id @default(autoincrement())
-  slug       String       @unique @db.VarChar(255)
-  published  DateTime?    @db.Timestamptz(6)
-  updated_at DateTime?    @default(now()) @db.Timestamptz(6)
-  hash_code  BigInt       @default(0)
-  title      String
-  post_stats post_stats[]
-  post_tags  post_tags[]
+  id          Int          @id @default(autoincrement())
+  slug        String       @unique @db.VarChar(255)
+  published   DateTime?    @db.Timestamptz(6)
+  updated_at  DateTime?    @default(now()) @db.Timestamptz(6)
+  hash_code   String
+  title       String
+  description String?      @default("\"\"")
+  post_stats  post_stats[]
+  post_tags   post_tags[]
 }
 
 model tags {

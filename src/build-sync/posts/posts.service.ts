@@ -7,11 +7,8 @@ export class PostsService {
   constructor(private prisma: PrismaService) {}
 
   async upsertPost(postDto: CreatePostDto) {
-    const { slug, published, tags, hash_code, title } = postDto;
+    const { slug, published, tags, hash_code, title, description } = postDto;
     const inputTags = tags ?? [];
-
-    // hash_code를 bigint로 변환
-    const hashCodeBigInt = BigInt(hash_code);
 
     // published가 string인 경우 Date로 변환
     const publishedDate = published ? new Date(published) : null;
@@ -20,12 +17,18 @@ export class PostsService {
       // posts 테이블에 upsert
       const post = await tx.posts.upsert({
         where: { slug },
-        update: { published: publishedDate, hash_code: hashCodeBigInt, title },
+        update: {
+          published: publishedDate,
+          hash_code,
+          title,
+          description,
+        },
         create: {
           slug,
           published: publishedDate,
-          hash_code: hashCodeBigInt,
+          hash_code,
           title,
+          description,
         },
       });
 
@@ -109,17 +112,16 @@ export class PostsService {
     const tags = updatePostDto.tags;
     const hash_code = updatePostDto.hash_code;
     const title = updatePostDto.title;
+    const description = updatePostDto.description;
     const inputTags = tags ?? [];
 
     return await this.prisma.$transaction(async (tx) => {
       // undefined 필드는 제외하고 업데이트
       const updateData: Record<string, unknown> = {};
       if (published !== undefined) updateData.published = published;
-      if (hash_code !== undefined) {
-        updateData.hash_code =
-          typeof hash_code === 'string' ? BigInt(hash_code) : hash_code;
-      }
+      if (hash_code !== undefined) updateData.hash_code = hash_code;
       if (title !== undefined) updateData.title = title;
+      if (description !== undefined) updateData.description = description;
 
       const post = await tx.posts.update({
         where: { id },

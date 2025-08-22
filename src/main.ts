@@ -4,12 +4,6 @@ import { AppModule } from './app.module';
 import { clientConfig } from './config/app-client-config';
 
 async function bootstrap() {
-  // BigInt JSON serialization 설정
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  (BigInt.prototype as any).toJSON = function (this: bigint): string {
-    return this.toString();
-  };
-
   const app = await NestFactory.create(AppModule);
 
   // Global validation pipe

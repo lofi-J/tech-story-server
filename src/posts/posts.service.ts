@@ -52,7 +52,7 @@ export class PostsService {
         title: post.title,
         published: post.published || undefined,
         updated_at: post.updated_at || undefined,
-        hash_code: post.hash_code.toString(),
+        hash_code: post.hash_code,
         tags: post.post_tags.map((pt) => ({
           id: pt.tags.id,
           tag_name: pt.tags.tag_name,
@@ -201,7 +201,7 @@ export class PostsService {
         title: post.title,
         published: post.published || undefined,
         updated_at: post.updated_at || undefined,
-        hash_code: post.hash_code.toString(),
+        hash_code: post.hash_code,
         tags: post.post_tags.map((pt) => ({
           id: pt.tags.id,
           tag_name: pt.tags.tag_name,

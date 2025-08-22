@@ -20,6 +20,10 @@ export class CreatePostDto {
 
   @IsString()
   title!: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
 
 export class UpdatePostDto {
@@ -44,6 +48,10 @@ export class UpdatePostDto {
   @IsOptional()
   @IsString()
   title?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
 
 export interface PostResponse {
@@ -52,6 +60,7 @@ export interface PostResponse {
   published: Date | null;
   updated_at: Date | null;
   title: string;
+  description: string;
   tags?: string[];
-  hash_code: bigint;
+  hash_code: string;
 }
