@@ -22,7 +22,9 @@ export class PostsController {
   async upsertPost(@Body() createPostDto: CreatePostDto) {
     try {
       console.log('받은 데이터:', createPostDto);
+
       const post = await this.postsService.upsertPost(createPostDto);
+
       return {
         ok: true,
         status: 201,

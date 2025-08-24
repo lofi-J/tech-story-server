@@ -1,18 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
+import {
+  CreatePostDto,
+  PostWithRelations,
+  UpdatePostDto,
+  type PostResponse,
+} from './dto/post.dto';
 
 @Injectable()
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
-  async upsertPost(postDto: CreatePostDto) {
-    const { slug, published, tags, category, hash_code, title, description } =
-      postDto;
+  // 프론트엔드가 기대하는 응답 구조로 변환
+  private transformToPostResponse(
+    post: PostWithRelations | null,
+  ): PostResponse | null {
+    if (!post) return null;
+
+    return {
+      id: post.id,
+      slug: post.slug,
+      title: post.title,
+      description: post.description || '',
+      hash_code: post.hash_code,
+      category: post.categories?.category_name || '',
+      published: post.published ? post.published.toISOString() : null,
+      updated_at: post.updated_at
+        ? post.updated_at.toISOString()
+        : new Date().toISOString(),
+    };
+  }
+
+  async upsertPost(postDto: CreatePostDto): Promise<PostResponse | null> {
+    const { metadata, hash_code } = postDto;
+    const { slug, published, tags, category, title, description } = metadata;
     const inputTags = tags ?? [];
 
-    // published가 string인 경우 Date로 변환
     const publishedDate = published ? new Date(published) : null;
+    const postDescription = description ?? '';
 
     return await this.prisma.$transaction(async (tx) => {
       let categoryId: number | null = null;
@@ -34,7 +59,7 @@ export class PostsService {
           published: publishedDate,
           hash_code,
           title,
-          description,
+          description: postDescription,
           category_id: categoryId,
         },
         create: {
@@ -42,7 +67,7 @@ export class PostsService {
           published: publishedDate,
           hash_code,
           title,
-          description,
+          description: postDescription,
           category_id: categoryId,
         },
       });
@@ -79,7 +104,20 @@ export class PostsService {
         });
       }
 
-      return post;
+      // 생성/업데이트된 포스트를 카테고리 정보와 함께 조회
+      const fullPost = await tx.posts.findUnique({
+        where: { id: post.id },
+        include: {
+          categories: true,
+          post_tags: {
+            include: {
+              tags: true,
+            },
+          },
+        },
+      });
+
+      return this.transformToPostResponse(fullPost);
     });
   }
 
@@ -126,12 +164,12 @@ export class PostsService {
   }
 
   async updatePost(id: number, updatePostDto: UpdatePostDto) {
-    const published = updatePostDto.published;
-    const tags = updatePostDto.tags;
-    const category = updatePostDto.category;
-    const hash_code = updatePostDto.hash_code;
-    const title = updatePostDto.title;
-    const description = updatePostDto.description;
+    if (!updatePostDto.metadata) {
+      throw new Error('metadata is required');
+    }
+
+    const { metadata, hash_code } = updatePostDto;
+    const { published, tags, category, title, description } = metadata;
     const inputTags = tags ?? [];
 
     return await this.prisma.$transaction(async (tx) => {
@@ -140,7 +178,7 @@ export class PostsService {
       if (published !== undefined) updateData.published = published;
       if (hash_code !== undefined) updateData.hash_code = hash_code;
       if (title !== undefined) updateData.title = title;
-      if (description !== undefined) updateData.description = description;
+      if (description !== undefined) updateData.description = description ?? '';
 
       // 카테고리 처리 (category가 정의된 경우에만)
       if (category !== undefined) {
