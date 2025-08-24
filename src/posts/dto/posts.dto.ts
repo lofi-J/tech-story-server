@@ -37,3 +37,73 @@ export class GetPostsInput {
   @IsOptional()
   search?: string;
 }
+
+@InputType()
+export class GetPostsByTagInput {
+  @Field(() => String, { description: '태그 이름' })
+  @IsString()
+  tagName!: string;
+
+  @Field(() => Int, { defaultValue: 10, description: '가져올 포스트 수' })
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  limit: number = 10;
+
+  @Field(() => Int, { defaultValue: 0, description: '건너뛸 포스트 수' })
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  offset: number = 0;
+
+  @Field(() => PostsOrderBy, {
+    defaultValue: PostsOrderBy.LATEST,
+    description: '정렬 기준',
+  })
+  @IsEnum(PostsOrderBy)
+  @IsOptional()
+  orderBy: PostsOrderBy = PostsOrderBy.LATEST;
+
+  @Field(() => SortOrder, {
+    defaultValue: SortOrder.DESC,
+    description: '정렬 순서',
+  })
+  @IsEnum(SortOrder)
+  @IsOptional()
+  order: SortOrder = SortOrder.DESC;
+}
+
+@InputType()
+export class GetPostsByCategoryInput {
+  @Field(() => String, { description: '카테고리 이름' })
+  @IsString()
+  categoryName!: string;
+
+  @Field(() => Int, { defaultValue: 10, description: '가져올 포스트 수' })
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  limit: number = 10;
+
+  @Field(() => Int, { defaultValue: 0, description: '건너뛸 포스트 수' })
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  offset: number = 0;
+
+  @Field(() => PostsOrderBy, {
+    defaultValue: PostsOrderBy.LATEST,
+    description: '정렬 기준',
+  })
+  @IsEnum(PostsOrderBy)
+  @IsOptional()
+  orderBy: PostsOrderBy = PostsOrderBy.LATEST;
+
+  @Field(() => SortOrder, {
+    defaultValue: SortOrder.DESC,
+    description: '정렬 순서',
+  })
+  @IsEnum(SortOrder)
+  @IsOptional()
+  order: SortOrder = SortOrder.DESC;
+}

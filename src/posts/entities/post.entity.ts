@@ -47,6 +47,9 @@ export class Post {
   @Field(() => [Tags], { nullable: true })
   tags?: Tags[];
 
+  @Field({ nullable: true, description: '첫 번째 태그를 카테고리로 사용' })
+  category?: string;
+
   @Field(() => PostStats, { nullable: true })
   stats?: PostStats;
 }

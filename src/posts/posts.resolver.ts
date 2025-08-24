@@ -1,5 +1,9 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { GetPostsInput } from './dto/posts.dto';
+import {
+  GetPostsByCategoryInput,
+  GetPostsByTagInput,
+  GetPostsInput,
+} from './dto/posts.dto';
 import { Post, PostsResponse } from './entities/post.entity';
 import { PostsService } from './posts.service';
 
@@ -20,7 +24,16 @@ export class PostsResolver {
   }
 
   @Query(() => PostsResponse, { name: 'getPostsByTag' })
-  async getPostsByTag(@Args('tag') tag: string): Promise<PostsResponse> {
-    return await this.postsService.getPostsByTag(tag);
+  async getPostsByTag(
+    @Args('input') input: GetPostsByTagInput,
+  ): Promise<PostsResponse> {
+    return await this.postsService.getPostsByTag(input);
+  }
+
+  @Query(() => PostsResponse, { name: 'getPostsByCategory' })
+  async getPostsByCategory(
+    @Args('input') input: GetPostsByCategoryInput,
+  ): Promise<PostsResponse> {
+    return await this.postsService.getPostsByCategory(input);
   }
 }
