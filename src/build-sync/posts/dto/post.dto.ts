@@ -14,6 +14,10 @@ export class CreatePostDto {
   @IsString({ each: true })
   tags?: string[];
 
+  @IsOptional()
+  @IsString()
+  category?: string;
+
   @Transform(({ value }) => (typeof value === 'string' ? value : String(value)))
   @IsString()
   hash_code!: string;
@@ -41,6 +45,10 @@ export class UpdatePostDto {
   tags?: string[];
 
   @IsOptional()
+  @IsString()
+  category?: string;
+
+  @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? value : String(value)))
   @IsString()
   hash_code?: string;
@@ -62,5 +70,6 @@ export interface PostResponse {
   title: string;
   description: string;
   tags?: string[];
+  category?: string;
   hash_code: string;
 }

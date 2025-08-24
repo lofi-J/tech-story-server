@@ -4,7 +4,9 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CategoriesModule as BuildSyncCategoriesModule } from './build-sync/categories/categories.module';
 import { PostsModule } from './build-sync/posts/posts.module';
+import { CategoriesModule } from './categories/categories.module';
 import { PostsModule as GraphQLPostsModule } from './posts/posts.module';
 import { PrismaService } from './prisma/prisma.service';
 import { SupabaseService } from './supabase/supabase.service';
@@ -22,6 +24,8 @@ import { TagsModule } from './tags/tags.module';
       playground: true,
       sortSchema: true,
     }),
+    BuildSyncCategoriesModule,
+    CategoriesModule,
     PostsModule,
     GraphQLPostsModule,
     TagsModule,

@@ -7,13 +7,26 @@ export class PostsService {
   constructor(private prisma: PrismaService) {}
 
   async upsertPost(postDto: CreatePostDto) {
-    const { slug, published, tags, hash_code, title, description } = postDto;
+    const { slug, published, tags, category, hash_code, title, description } =
+      postDto;
     const inputTags = tags ?? [];
 
     // published가 string인 경우 Date로 변환
     const publishedDate = published ? new Date(published) : null;
 
     return await this.prisma.$transaction(async (tx) => {
+      let categoryId: number | null = null;
+
+      // 카테고리 처리 (있는 경우)
+      if (category) {
+        const categoryRecord = await tx.categories.upsert({
+          where: { category_name: category },
+          update: {},
+          create: { category_name: category },
+        });
+        categoryId = categoryRecord.id;
+      }
+
       // posts 테이블에 upsert
       const post = await tx.posts.upsert({
         where: { slug },
@@ -22,6 +35,7 @@ export class PostsService {
           hash_code,
           title,
           description,
+          category_id: categoryId,
         },
         create: {
           slug,
@@ -29,6 +43,7 @@ export class PostsService {
           hash_code,
           title,
           description,
+          category_id: categoryId,
         },
       });
 
@@ -71,6 +86,7 @@ export class PostsService {
   async getAllPosts() {
     return await this.prisma.posts.findMany({
       include: {
+        categories: true,
         post_tags: {
           include: {
             tags: true,
@@ -85,6 +101,7 @@ export class PostsService {
     return await this.prisma.posts.findUnique({
       where: { id },
       include: {
+        categories: true,
         post_tags: {
           include: {
             tags: true,
@@ -98,6 +115,7 @@ export class PostsService {
     return await this.prisma.posts.findUnique({
       where: { slug },
       include: {
+        categories: true,
         post_tags: {
           include: {
             tags: true,
@@ -110,6 +128,7 @@ export class PostsService {
   async updatePost(id: number, updatePostDto: UpdatePostDto) {
     const published = updatePostDto.published;
     const tags = updatePostDto.tags;
+    const category = updatePostDto.category;
     const hash_code = updatePostDto.hash_code;
     const title = updatePostDto.title;
     const description = updatePostDto.description;
@@ -122,6 +141,20 @@ export class PostsService {
       if (hash_code !== undefined) updateData.hash_code = hash_code;
       if (title !== undefined) updateData.title = title;
       if (description !== undefined) updateData.description = description;
+
+      // 카테고리 처리 (category가 정의된 경우에만)
+      if (category !== undefined) {
+        if (category) {
+          const categoryRecord = await tx.categories.upsert({
+            where: { category_name: category },
+            update: {},
+            create: { category_name: category },
+          });
+          updateData.category_id = categoryRecord.id;
+        } else {
+          updateData.category_id = null;
+        }
+      }
 
       const post = await tx.posts.update({
         where: { id },
