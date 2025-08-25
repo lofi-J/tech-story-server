@@ -54,7 +54,7 @@ export class PostsService {
           created_at: pt.tags.created_at || new Date(),
           usage_count: undefined, // 필요시 계산 로직 추가
         })),
-        category: post.post_tags[0]?.tags?.tag_name || '', // 첫 번째 태그를 category로 설정
+        category: post.categories?.category_name || '',
         stats: post.post_stats[0]
           ? {
               id: post.post_stats[0].id,
@@ -147,6 +147,7 @@ export class PostsService {
           AND: [whereCondition, { id: { in: postIds } }],
         },
         include: {
+          categories: true,
           post_tags: {
             include: {
               tags: true,
@@ -159,7 +160,6 @@ export class PostsService {
         },
       });
 
-      // 정렬 순서 유지
       return postIds
         .map((id) => posts.find((post) => post.id === id))
         .filter((post): post is NonNullable<typeof post> => Boolean(post));
@@ -172,6 +172,7 @@ export class PostsService {
       skip: offset,
       orderBy: this.getOrderByCondition(orderBy, order),
       include: {
+        categories: true,
         post_tags: {
           include: {
             tags: true,
@@ -189,6 +190,7 @@ export class PostsService {
     const post = await this.prisma.posts.findUnique({
       where: { slug },
       include: {
+        categories: true,
         post_tags: {
           include: {
             tags: true,
@@ -210,6 +212,7 @@ export class PostsService {
       published: post.published || undefined,
       updated_at: post.updated_at || undefined,
       hash_code: post.hash_code,
+      category: post.categories?.category_name || '',
       tags:
         post.post_tags?.map((pt) => ({
           id: pt.tags.id,
@@ -275,7 +278,7 @@ export class PostsService {
           created_at: pt.tags.created_at || new Date(),
           usage_count: undefined, // 필요시 계산 로직 추가
         })),
-        category: post.post_tags[0]?.tags?.tag_name || '', // 첫 번째 태그를 category로 설정
+        category: post.categories?.category_name || '',
         stats: post.post_stats[0]
           ? {
               id: post.post_stats[0].id,
@@ -327,13 +330,13 @@ export class PostsService {
         published: post.published || undefined,
         updated_at: post.updated_at || undefined,
         hash_code: post.hash_code,
+        category: post.categories?.category_name || '',
         tags: post.post_tags.map((pt) => ({
           id: pt.tags.id,
           tag_name: pt.tags.tag_name,
           created_at: pt.tags.created_at || new Date(),
           usage_count: undefined, // 필요시 계산 로직 추가
         })),
-        category: post.post_tags[0]?.tags?.tag_name || '', // 첫 번째 태그를 category로 설정
         stats: post.post_stats[0]
           ? {
               id: post.post_stats[0].id,
