@@ -297,19 +297,15 @@ export class PostsService {
   async getPostsByCategory(input: GetPostsByCategoryInput) {
     const { categoryName, limit, offset, orderBy, order } = input;
 
-    // 검색 조건 설정: post_tags에서 첫 번째 태그가 categoryName과 일치하는 posts 조회
+    // 검색 조건 설정: categories 테이블에서 category_name이 일치하는 posts 조회
     const whereCondition: Prisma.postsWhereInput = {
-      post_tags: {
-        some: {
-          tags: {
-            tag_name: categoryName,
-          },
-        },
+      categories: {
+        category_name: categoryName,
       },
     };
 
     // 카테고리별 포스트들을 조회 (인기도 정렬 지원)
-    const posts = await this.getPostsWithPopularitySort(
+    const categoryPosts = await this.getPostsWithPopularitySort(
       whereCondition,
       orderBy,
       order,
@@ -317,31 +313,10 @@ export class PostsService {
       offset,
     );
 
-    // 첫 번째 태그가 category인 posts만 필터링
-    const categoryPosts = posts.filter((post) => {
-      const firstTag = post.post_tags[0]?.tags?.tag_name;
-      return firstTag === categoryName;
-    });
-
     // 전체 개수 조회 (필터링된 결과 기준)
-    const allCategoryPosts = await this.prisma.posts.findMany({
+    const totalCount = await this.prisma.posts.count({
       where: whereCondition,
-      include: {
-        post_tags: {
-          include: {
-            tags: true,
-          },
-          orderBy: {
-            tag_id: 'asc',
-          },
-        },
-      },
     });
-
-    const totalCount = allCategoryPosts.filter((post) => {
-      const firstTag = post.post_tags[0]?.tags?.tag_name;
-      return firstTag === categoryName;
-    }).length;
 
     return {
       posts: categoryPosts.map((post) => ({

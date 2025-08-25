@@ -27,10 +27,10 @@ model post_tags {
 }
 
 model categories {
-  id           Int       @id @default(autoincrement())
-  category_name String   @unique @db.VarChar(60)
-  created_at   DateTime? @default(now()) @db.Timestamptz(6)
-  posts        posts[]
+  id            Int       @id @default(autoincrement())
+  category_name String    @unique @db.VarChar(60)
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  posts         posts[]
 }
 
 model posts {
@@ -42,9 +42,9 @@ model posts {
   title       String
   description String?      @default("\"\"")
   category_id Int?
-  categories  categories?  @relation(fields: [category_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
   post_stats  post_stats[]
   post_tags   post_tags[]
+  categories  categories?  @relation(fields: [category_id], references: [id], onUpdate: NoAction)
 }
 
 model tags {
