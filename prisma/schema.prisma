@@ -42,6 +42,7 @@ model posts {
   title       String
   description String?      @default("\"\"")
   category_id Int?
+  thumbnail   String?
   post_stats  post_stats[]
   post_tags   post_tags[]
   categories  categories?  @relation(fields: [category_id], references: [id], onUpdate: NoAction)

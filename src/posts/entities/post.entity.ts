@@ -35,6 +35,9 @@ export class Post {
   @Field()
   description: string;
 
+  @Field(() => String, { nullable: true })
+  thumbnail: string | null;
+
   @Field({ nullable: true })
   published?: Date;
 

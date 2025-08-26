@@ -45,6 +45,7 @@ export class PostsService {
         slug: post.slug,
         title: post.title,
         description: post.description || '',
+        thumbnail: post.thumbnail || null,
         published: post.published || undefined,
         updated_at: post.updated_at || undefined,
         hash_code: post.hash_code,
@@ -209,6 +210,7 @@ export class PostsService {
       slug: post.slug,
       title: post.title,
       description: post.description || '',
+      thumbnail: post.thumbnail || null,
       published: post.published || undefined,
       updated_at: post.updated_at || undefined,
       hash_code: post.hash_code,
@@ -269,8 +271,9 @@ export class PostsService {
         slug: post.slug,
         title: post.title,
         description: post.description || '',
-        published: post.published || undefined,
-        updated_at: post.updated_at || undefined,
+        thumbnail: post.thumbnail,
+        published: post.published ?? undefined,
+        updated_at: post.updated_at ?? undefined,
         hash_code: post.hash_code,
         tags: post.post_tags.map((pt) => ({
           id: pt.tags.id,
@@ -282,10 +285,10 @@ export class PostsService {
         stats: post.post_stats[0]
           ? {
               id: post.post_stats[0].id,
-              post_id: post.post_stats[0].post_id || undefined,
+              post_id: post.post_stats[0].post_id ?? undefined,
               views: post.post_stats[0].views || 0,
               likes: post.post_stats[0].likes || 0,
-              updated_at: post.post_stats[0].updated_at || undefined,
+              updated_at: post.post_stats[0].updated_at ?? undefined,
             }
           : {
               views: 0,
@@ -327,6 +330,7 @@ export class PostsService {
         slug: post.slug,
         title: post.title,
         description: post.description || '',
+        thumbnail: post.thumbnail,
         published: post.published || undefined,
         updated_at: post.updated_at || undefined,
         hash_code: post.hash_code,

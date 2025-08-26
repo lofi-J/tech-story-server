@@ -21,6 +21,10 @@ export class PostMetadataDto {
 
   @IsOptional()
   @IsString()
+  thumbnail?: string;
+
+  @IsOptional()
+  @IsString()
   category?: string;
 
   @IsOptional()
@@ -62,6 +66,7 @@ export interface PostWithRelations {
   slug: string;
   title: string;
   description: string | null;
+  thumbnail: string | null;
   hash_code: string;
   published: Date | null;
   updated_at: Date | null;
@@ -88,6 +93,7 @@ export interface PostResponse {
   slug: string;
   title: string;
   description: string;
+  thumbnail: string | null;
   hash_code: string;
   category: string;
   published: string | null;

@@ -22,6 +22,7 @@ export class PostsService {
       slug: post.slug,
       title: post.title,
       description: post.description || '',
+      thumbnail: post.thumbnail || null,
       hash_code: post.hash_code,
       category: post.categories?.category_name || '',
       published: post.published ? post.published.toISOString() : null,
@@ -33,7 +34,8 @@ export class PostsService {
 
   async upsertPost(postDto: CreatePostDto): Promise<PostResponse | null> {
     const { metadata, hash_code } = postDto;
-    const { slug, published, tags, category, title, description } = metadata;
+    const { slug, published, tags, category, title, description, thumbnail } =
+      metadata;
     const inputTags = tags ?? [];
 
     const publishedDate = published ? new Date(published) : null;
@@ -60,6 +62,7 @@ export class PostsService {
           hash_code,
           title,
           description: postDescription,
+          thumbnail,
           category_id: categoryId,
         },
         create: {
