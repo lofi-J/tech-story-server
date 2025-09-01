@@ -1,23 +1,36 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "PostsModule", {
+    enumerable: true,
+    get: function() {
+        return PostsModule;
+    }
+});
+const _common = require("@nestjs/common");
+const _prismaservice = require("../prisma/prisma.service");
+const _postsresolver = require("./posts.resolver");
+const _postsservice = require("./posts.service");
+function _ts_decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    else for(var i = decorators.length - 1; i >= 0; i--)if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostsModule = void 0;
-const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("../prisma/prisma.service");
-const posts_resolver_1 = require("./posts.resolver");
-const posts_service_1 = require("./posts.service");
+}
 let PostsModule = class PostsModule {
 };
-exports.PostsModule = PostsModule;
-exports.PostsModule = PostsModule = __decorate([
-    (0, common_1.Module)({
-        providers: [posts_resolver_1.PostsResolver, posts_service_1.PostsService, prisma_service_1.PrismaService],
-        exports: [posts_service_1.PostsService],
+PostsModule = _ts_decorate([
+    (0, _common.Module)({
+        providers: [
+            _postsresolver.PostsResolver,
+            _postsservice.PostsService,
+            _prismaservice.PrismaService
+        ],
+        exports: [
+            _postsservice.PostsService
+        ]
     })
 ], PostsModule);
+
 //# sourceMappingURL=posts.module.js.map

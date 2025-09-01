@@ -1,22 +1,33 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "TagsModule", {
+    enumerable: true,
+    get: function() {
+        return TagsModule;
+    }
+});
+const _common = require("@nestjs/common");
+const _prismaservice = require("../prisma/prisma.service");
+const _tagresolver = require("./tag.resolver");
+const _tagservice = require("./tag.service");
+function _ts_decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    else for(var i = decorators.length - 1; i >= 0; i--)if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TagsModule = void 0;
-const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("../prisma/prisma.service");
-const tag_resolver_1 = require("./tag.resolver");
-const tag_service_1 = require("./tag.service");
+}
 let TagsModule = class TagsModule {
 };
-exports.TagsModule = TagsModule;
-exports.TagsModule = TagsModule = __decorate([
-    (0, common_1.Module)({
-        providers: [tag_resolver_1.TagsResolver, prisma_service_1.PrismaService, tag_service_1.TagsService],
+TagsModule = _ts_decorate([
+    (0, _common.Module)({
+        providers: [
+            _tagresolver.TagsResolver,
+            _prismaservice.PrismaService,
+            _tagservice.TagsService
+        ]
     })
 ], TagsModule);
+
 //# sourceMappingURL=tags.module.js.map

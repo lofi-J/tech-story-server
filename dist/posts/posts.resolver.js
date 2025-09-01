@@ -1,27 +1,32 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "PostsResolver", {
+    enumerable: true,
+    get: function() {
+        return PostsResolver;
+    }
+});
+const _graphql = require("@nestjs/graphql");
+const _postsdto = require("./dto/posts.dto");
+const _postentity = require("./entities/post.entity");
+const _postsservice = require("./posts.service");
+function _ts_decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    else for(var i = decorators.length - 1; i >= 0; i--)if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
+}
+function _ts_metadata(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostsResolver = void 0;
-const graphql_1 = require("@nestjs/graphql");
-const posts_dto_1 = require("./dto/posts.dto");
-const post_entity_1 = require("./entities/post.entity");
-const posts_service_1 = require("./posts.service");
+}
+function _ts_param(paramIndex, decorator) {
+    return function(target, key) {
+        decorator(target, key, paramIndex);
+    };
+}
 let PostsResolver = class PostsResolver {
-    postsService;
-    constructor(postsService) {
-        this.postsService = postsService;
-    }
     async getAllPosts(input) {
         return await this.postsService.getAllPosts(input);
     }
@@ -34,38 +39,61 @@ let PostsResolver = class PostsResolver {
     async getPostsByCategory(input) {
         return await this.postsService.getPostsByCategory(input);
     }
+    constructor(postsService){
+        this.postsService = postsService;
+    }
 };
-exports.PostsResolver = PostsResolver;
-__decorate([
-    (0, graphql_1.Query)(() => post_entity_1.PostsResponse, { name: 'getAllPosts' }),
-    __param(0, (0, graphql_1.Args)('input')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [posts_dto_1.GetPostsInput]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _graphql.Query)(()=>_postentity.PostsResponse, {
+        name: 'getAllPosts'
+    }),
+    _ts_param(0, (0, _graphql.Args)('input')),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        typeof _postsdto.GetPostsInput === "undefined" ? Object : _postsdto.GetPostsInput
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsResolver.prototype, "getAllPosts", null);
-__decorate([
-    (0, graphql_1.Query)(() => post_entity_1.Post, { name: 'getPostBySlug', nullable: true }),
-    __param(0, (0, graphql_1.Args)('slug')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _graphql.Query)(()=>_postentity.Post, {
+        name: 'getPostBySlug',
+        nullable: true
+    }),
+    _ts_param(0, (0, _graphql.Args)('slug')),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        String
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsResolver.prototype, "getPostBySlug", null);
-__decorate([
-    (0, graphql_1.Query)(() => post_entity_1.PostsResponse, { name: 'getPostsByTag' }),
-    __param(0, (0, graphql_1.Args)('input')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [posts_dto_1.GetPostsByTagInput]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _graphql.Query)(()=>_postentity.PostsResponse, {
+        name: 'getPostsByTag'
+    }),
+    _ts_param(0, (0, _graphql.Args)('input')),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        typeof _postsdto.GetPostsByTagInput === "undefined" ? Object : _postsdto.GetPostsByTagInput
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsResolver.prototype, "getPostsByTag", null);
-__decorate([
-    (0, graphql_1.Query)(() => post_entity_1.PostsResponse, { name: 'getPostsByCategory' }),
-    __param(0, (0, graphql_1.Args)('input')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [posts_dto_1.GetPostsByCategoryInput]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _graphql.Query)(()=>_postentity.PostsResponse, {
+        name: 'getPostsByCategory'
+    }),
+    _ts_param(0, (0, _graphql.Args)('input')),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        typeof _postsdto.GetPostsByCategoryInput === "undefined" ? Object : _postsdto.GetPostsByCategoryInput
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsResolver.prototype, "getPostsByCategory", null);
-exports.PostsResolver = PostsResolver = __decorate([
-    (0, graphql_1.Resolver)(() => post_entity_1.Post),
-    __metadata("design:paramtypes", [posts_service_1.PostsService])
+PostsResolver = _ts_decorate([
+    (0, _graphql.Resolver)(()=>_postentity.Post),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        typeof _postsservice.PostsService === "undefined" ? Object : _postsservice.PostsService
+    ])
 ], PostsResolver);
+
 //# sourceMappingURL=posts.resolver.js.map

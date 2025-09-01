@@ -1,56 +1,62 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "CategoriesService", {
+    enumerable: true,
+    get: function() {
+        return CategoriesService;
+    }
+});
+const _common = require("@nestjs/common");
+const _prismaservice = require("../prisma/prisma.service");
+const _categoriesorderbyenum = require("./enums/categories-order-by.enum");
+function _ts_decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    else for(var i = decorators.length - 1; i >= 0; i--)if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
+}
+function _ts_metadata(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CategoriesService = void 0;
-const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("../prisma/prisma.service");
-const categories_order_by_enum_1 = require("./enums/categories-order-by.enum");
+}
 let CategoriesService = class CategoriesService {
-    prisma;
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
     async getAllCategories(orderBy) {
-        if (orderBy === categories_order_by_enum_1.CategoriesOrderBy.POPULAR) {
+        if (orderBy === _categoriesorderbyenum.CategoriesOrderBy.POPULAR) {
+            // 인기순 정렬 (사용 횟수 기준)
             const categoriesWithCount = await this.prisma.categories.findMany({
                 include: {
                     _count: {
                         select: {
-                            posts: true,
-                        },
-                    },
+                            posts: true
+                        }
+                    }
                 },
                 orderBy: {
                     posts: {
-                        _count: 'desc',
-                    },
-                },
+                        _count: 'desc'
+                    }
+                }
             });
-            return categoriesWithCount.map((category) => ({
-                id: category.id,
-                category_name: category.category_name,
-                created_at: category.created_at,
-                usage_count: category._count.posts,
-            }));
-        }
-        else {
+            return categoriesWithCount.map((category)=>({
+                    id: category.id,
+                    category_name: category.category_name,
+                    created_at: category.created_at,
+                    usage_count: category._count.posts
+                }));
+        } else {
+            // 기존 정렬 방식
             const categories = await this.prisma.categories.findMany({
-                orderBy: { [orderBy]: 'desc' },
+                orderBy: {
+                    [orderBy]: 'desc'
+                }
             });
-            return categories.map((category) => ({
-                id: category.id,
-                category_name: category.category_name,
-                created_at: category.created_at,
-                usage_count: undefined,
-            }));
+            return categories.map((category)=>({
+                    id: category.id,
+                    category_name: category.category_name,
+                    created_at: category.created_at,
+                    usage_count: undefined
+                }));
         }
     }
     async getPopularCategories(limit = 10) {
@@ -58,16 +64,16 @@ let CategoriesService = class CategoriesService {
             include: {
                 _count: {
                     select: {
-                        posts: true,
-                    },
-                },
+                        posts: true
+                    }
+                }
             },
             orderBy: {
                 posts: {
-                    _count: 'desc',
-                },
+                    _count: 'desc'
+                }
             },
-            take: limit,
+            take: limit
         });
     }
     async getCategoryUsageStats() {
@@ -78,21 +84,27 @@ let CategoriesService = class CategoriesService {
                 created_at: true,
                 _count: {
                     select: {
-                        posts: true,
-                    },
-                },
+                        posts: true
+                    }
+                }
             },
             orderBy: {
                 posts: {
-                    _count: 'desc',
-                },
-            },
+                    _count: 'desc'
+                }
+            }
         });
     }
+    constructor(prisma){
+        this.prisma = prisma;
+    }
 };
-exports.CategoriesService = CategoriesService;
-exports.CategoriesService = CategoriesService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+CategoriesService = _ts_decorate([
+    (0, _common.Injectable)(),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        typeof _prismaservice.PrismaService === "undefined" ? Object : _prismaservice.PrismaService
+    ])
 ], CategoriesService);
+
 //# sourceMappingURL=categories.service.js.map

@@ -1,66 +1,89 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "CategoriesService", {
+    enumerable: true,
+    get: function() {
+        return CategoriesService;
+    }
+});
+const _common = require("@nestjs/common");
+const _prismaservice = require("../../prisma/prisma.service");
+function _ts_decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    else for(var i = decorators.length - 1; i >= 0; i--)if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
+}
+function _ts_metadata(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CategoriesService = void 0;
-const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("../../prisma/prisma.service");
+}
 let CategoriesService = class CategoriesService {
-    prisma;
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
     async getAllCategories() {
         return await this.prisma.categories.findMany({
             include: {
                 _count: {
-                    select: { posts: true },
-                },
+                    select: {
+                        posts: true
+                    }
+                }
             },
-            orderBy: { created_at: 'desc' },
+            orderBy: {
+                created_at: 'desc'
+            }
         });
     }
     async getCategory(id) {
         return await this.prisma.categories.findUnique({
-            where: { id },
+            where: {
+                id
+            },
             include: {
                 _count: {
-                    select: { posts: true },
-                },
-            },
+                    select: {
+                        posts: true
+                    }
+                }
+            }
         });
     }
     async getCategoryByName(categoryName) {
         return await this.prisma.categories.findUnique({
-            where: { category_name: categoryName },
+            where: {
+                category_name: categoryName
+            },
             include: {
                 _count: {
-                    select: { posts: true },
-                },
-            },
+                    select: {
+                        posts: true
+                    }
+                }
+            }
         });
     }
     async createCategory(createCategoryDto) {
         return await this.prisma.categories.create({
-            data: createCategoryDto,
+            data: createCategoryDto
         });
     }
     async deleteCategory(id) {
         return await this.prisma.categories.delete({
-            where: { id },
+            where: {
+                id
+            }
         });
     }
+    constructor(prisma){
+        this.prisma = prisma;
+    }
 };
-exports.CategoriesService = CategoriesService;
-exports.CategoriesService = CategoriesService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+CategoriesService = _ts_decorate([
+    (0, _common.Injectable)(),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        typeof _prismaservice.PrismaService === "undefined" ? Object : _prismaservice.PrismaService
+    ])
 ], CategoriesService);
+
 //# sourceMappingURL=categories.service.js.map

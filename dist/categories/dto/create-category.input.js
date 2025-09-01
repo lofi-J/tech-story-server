@@ -1,25 +1,31 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "CreateCategoryInput", {
+    enumerable: true,
+    get: function() {
+        return CreateCategoryInput;
+    }
+});
+const _graphql = require("@nestjs/graphql");
+function _ts_decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    else for(var i = decorators.length - 1; i >= 0; i--)if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
+}
+function _ts_metadata(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateCategoryInput = void 0;
-const graphql_1 = require("@nestjs/graphql");
+}
 let CreateCategoryInput = class CreateCategoryInput {
-    category_name;
 };
-exports.CreateCategoryInput = CreateCategoryInput;
-__decorate([
-    (0, graphql_1.Field)(),
-    __metadata("design:type", String)
+_ts_decorate([
+    (0, _graphql.Field)(),
+    _ts_metadata("design:type", String)
 ], CreateCategoryInput.prototype, "category_name", void 0);
-exports.CreateCategoryInput = CreateCategoryInput = __decorate([
-    (0, graphql_1.InputType)()
+CreateCategoryInput = _ts_decorate([
+    (0, _graphql.InputType)()
 ], CreateCategoryInput);
+
 //# sourceMappingURL=create-category.input.js.map

@@ -1,37 +1,43 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "PostsController", {
+    enumerable: true,
+    get: function() {
+        return PostsController;
+    }
+});
+const _common = require("@nestjs/common");
+const _prisma = require("../../util/prisma");
+const _postsservice = require("./posts.service");
+function _ts_decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    else for(var i = decorators.length - 1; i >= 0; i--)if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
+}
+function _ts_metadata(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostsController = void 0;
-const common_1 = require("@nestjs/common");
-const prisma_1 = require("../../util/prisma");
-const posts_service_1 = require("./posts.service");
+}
+function _ts_param(paramIndex, decorator) {
+    return function(target, key) {
+        decorator(target, key, paramIndex);
+    };
+}
 let PostsController = class PostsController {
-    postsService;
-    constructor(postsService) {
-        this.postsService = postsService;
-    }
+    // API 키 검증 메서드
     validateApiKey(apiKey) {
         const validApiKey = process.env.BUILD_SYNC_API_KEY;
         if (!validApiKey) {
             console.warn('BUILD_SYNC_API_KEY 환경변수가 설정되지 않았습니다. 개발 환경에서는 무시됩니다.');
             if (process.env.NODE_ENV === 'production') {
-                throw new common_1.HttpException('API 키가 설정되지 않았습니다', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new _common.HttpException('API 키가 설정되지 않았습니다', _common.HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            return;
+            return; // 개발 환경에서는 API 키 없이도 허용
         }
         if (!apiKey || apiKey !== validApiKey) {
-            throw new common_1.HttpException('유효하지 않은 API 키입니다', common_1.HttpStatus.UNAUTHORIZED);
+            throw new _common.HttpException('유효하지 않은 API 키입니다', _common.HttpStatus.UNAUTHORIZED);
         }
     }
     async upsertPost(apiKey, createPostDto) {
@@ -42,30 +48,27 @@ let PostsController = class PostsController {
             return {
                 ok: true,
                 status: 201,
-                data: post,
+                data: post
             };
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Upsert 에러 상세:', error);
-            if ((0, prisma_1.isPrismaError)(error))
-                return (0, prisma_1.handlePrismaError)(error);
-            throw new common_1.HttpException('포스트 처리 실패', common_1.HttpStatus.BAD_REQUEST);
+            if ((0, _prisma.isPrismaError)(error)) return (0, _prisma.handlePrismaError)(error);
+            throw new _common.HttpException('포스트 처리 실패', _common.HttpStatus.BAD_REQUEST);
         }
     }
     async bulkUpsertPosts(apiKey, posts) {
         this.validateApiKey(apiKey);
         try {
-            const results = await Promise.all(posts.map((post) => this.postsService.upsertPost(post)));
+            const results = await Promise.all(posts.map((post)=>this.postsService.upsertPost(post)));
             return {
                 ok: true,
                 status: 200,
                 message: `${results.length}개의 포스트를 성공적으로 처리했습니다`,
-                data: results,
+                data: results
             };
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
-            throw new common_1.HttpException('대량 포스트 처리 실패', common_1.HttpStatus.BAD_REQUEST);
+            throw new _common.HttpException('대량 포스트 처리 실패', _common.HttpStatus.BAD_REQUEST);
         }
     }
     async getAllPosts() {
@@ -74,49 +77,44 @@ let PostsController = class PostsController {
             return {
                 ok: true,
                 status: 200,
-                data: posts,
+                data: posts
             };
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
-            throw new common_1.HttpException('포스트 목록 조회 실패', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new _common.HttpException('포스트 목록 조회 실패', _common.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async getPostBySlug(slug) {
         try {
             const post = await this.postsService.getPostBySlug(slug);
             if (!post) {
-                throw new common_1.HttpException('포스트를 찾을 수 없습니다', common_1.HttpStatus.NOT_FOUND);
+                throw new _common.HttpException('포스트를 찾을 수 없습니다', _common.HttpStatus.NOT_FOUND);
             }
             return {
                 ok: true,
                 status: 200,
-                data: post,
+                data: post
             };
-        }
-        catch (error) {
-            if (error instanceof common_1.HttpException)
-                throw error;
+        } catch (error) {
+            if (error instanceof _common.HttpException) throw error;
             console.error(error);
-            throw new common_1.HttpException('포스트 조회 실패', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new _common.HttpException('포스트 조회 실패', _common.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async getPost(id) {
         try {
             const post = await this.postsService.getPost(id);
             if (!post) {
-                throw new common_1.HttpException('포스트를 찾을 수 없습니다', common_1.HttpStatus.NOT_FOUND);
+                throw new _common.HttpException('포스트를 찾을 수 없습니다', _common.HttpStatus.NOT_FOUND);
             }
             return {
                 ok: true,
                 status: 200,
-                data: post,
+                data: post
             };
-        }
-        catch (error) {
-            if (error instanceof common_1.HttpException)
-                throw error;
-            throw new common_1.HttpException('포스트 조회 실패', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (error) {
+            if (error instanceof _common.HttpException) throw error;
+            throw new _common.HttpException('포스트 조회 실패', _common.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async updatePostBySlug(slug, updatePostDto) {
@@ -125,12 +123,11 @@ let PostsController = class PostsController {
             return {
                 ok: true,
                 status: 200,
-                data: post,
+                data: post
             };
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
-            throw new common_1.HttpException('포스트 업데이트 실패', common_1.HttpStatus.BAD_REQUEST);
+            throw new _common.HttpException('포스트 업데이트 실패', _common.HttpStatus.BAD_REQUEST);
         }
     }
     async updatePost(id, updatePostDto) {
@@ -139,12 +136,11 @@ let PostsController = class PostsController {
             return {
                 ok: true,
                 status: 200,
-                data: post,
+                data: post
             };
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
-            throw new common_1.HttpException('포스트 업데이트 실패', common_1.HttpStatus.BAD_REQUEST);
+            throw new _common.HttpException('포스트 업데이트 실패', _common.HttpStatus.BAD_REQUEST);
         }
     }
     async deletePostBySlug(slug) {
@@ -153,12 +149,11 @@ let PostsController = class PostsController {
             return {
                 ok: true,
                 status: 200,
-                message: '포스트가 성공적으로 삭제되었습니다',
+                message: '포스트가 성공적으로 삭제되었습니다'
             };
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
-            throw new common_1.HttpException('포스트 삭제 실패', common_1.HttpStatus.BAD_REQUEST);
+            throw new _common.HttpException('포스트 삭제 실패', _common.HttpStatus.BAD_REQUEST);
         }
     }
     async deletePost(id) {
@@ -167,84 +162,109 @@ let PostsController = class PostsController {
             return {
                 ok: true,
                 status: 200,
-                message: '포스트가 성공적으로 삭제되었습니다',
+                message: '포스트가 성공적으로 삭제되었습니다'
             };
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
-            throw new common_1.HttpException('포스트 삭제 실패', common_1.HttpStatus.BAD_REQUEST);
+            throw new _common.HttpException('포스트 삭제 실패', _common.HttpStatus.BAD_REQUEST);
         }
     }
+    constructor(postsService){
+        this.postsService = postsService;
+    }
 };
-exports.PostsController = PostsController;
-__decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Headers)('x-api-key')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Function]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _common.Post)(),
+    _ts_param(0, (0, _common.Headers)('x-api-key')),
+    _ts_param(1, (0, _common.Body)()),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        String,
+        typeof CreatePostDto === "undefined" ? Object : CreatePostDto
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsController.prototype, "upsertPost", null);
-__decorate([
-    (0, common_1.Put)('bulk'),
-    __param(0, (0, common_1.Headers)('x-api-key')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Array]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _common.Put)('bulk'),
+    _ts_param(0, (0, _common.Headers)('x-api-key')),
+    _ts_param(1, (0, _common.Body)()),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        String,
+        Array
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsController.prototype, "bulkUpsertPosts", null);
-__decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _common.Get)(),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", []),
+    _ts_metadata("design:returntype", Promise)
 ], PostsController.prototype, "getAllPosts", null);
-__decorate([
-    (0, common_1.Get)('slug/:slug'),
-    __param(0, (0, common_1.Param)('slug')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _common.Get)('slug/:slug'),
+    _ts_param(0, (0, _common.Param)('slug')),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        String
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsController.prototype, "getPostBySlug", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _common.Get)(':id'),
+    _ts_param(0, (0, _common.Param)('id', _common.ParseIntPipe)),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        Number
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsController.prototype, "getPost", null);
-__decorate([
-    (0, common_1.Put)('slug/:slug'),
-    __param(0, (0, common_1.Param)('slug')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Function]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _common.Put)('slug/:slug'),
+    _ts_param(0, (0, _common.Param)('slug')),
+    _ts_param(1, (0, _common.Body)()),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        String,
+        typeof UpdatePostDto === "undefined" ? Object : UpdatePostDto
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsController.prototype, "updatePostBySlug", null);
-__decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Function]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _common.Put)(':id'),
+    _ts_param(0, (0, _common.Param)('id', _common.ParseIntPipe)),
+    _ts_param(1, (0, _common.Body)()),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        Number,
+        typeof UpdatePostDto === "undefined" ? Object : UpdatePostDto
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsController.prototype, "updatePost", null);
-__decorate([
-    (0, common_1.Delete)('slug/:slug'),
-    __param(0, (0, common_1.Param)('slug')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _common.Delete)('slug/:slug'),
+    _ts_param(0, (0, _common.Param)('slug')),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        String
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsController.prototype, "deletePostBySlug", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
+_ts_decorate([
+    (0, _common.Delete)(':id'),
+    _ts_param(0, (0, _common.Param)('id', _common.ParseIntPipe)),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        Number
+    ]),
+    _ts_metadata("design:returntype", Promise)
 ], PostsController.prototype, "deletePost", null);
-exports.PostsController = PostsController = __decorate([
-    (0, common_1.Controller)('api/build-sync/posts'),
-    __metadata("design:paramtypes", [posts_service_1.PostsService])
+PostsController = _ts_decorate([
+    (0, _common.Controller)('api/build-sync/posts'),
+    _ts_metadata("design:type", Function),
+    _ts_metadata("design:paramtypes", [
+        typeof _postsservice.PostsService === "undefined" ? Object : _postsservice.PostsService
+    ])
 ], PostsController);
+
 //# sourceMappingURL=posts.controller.js.map
