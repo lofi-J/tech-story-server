@@ -3,12 +3,13 @@ import { PostsService } from './posts.service';
 export declare class PostsController {
     private readonly postsService;
     constructor(postsService: PostsService);
-    upsertPost(createPostDto: CreatePostDto): Promise<{
+    private validateApiKey;
+    upsertPost(apiKey: string, createPostDto: CreatePostDto): Promise<{
         ok: boolean;
         status: number;
         data: import("./dto/post.dto").PostResponse | null;
     }>;
-    bulkUpsertPosts(posts: CreatePostDto[]): Promise<{
+    bulkUpsertPosts(apiKey: string, posts: CreatePostDto[]): Promise<{
         ok: boolean;
         status: number;
         message: string;

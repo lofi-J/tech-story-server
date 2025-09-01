@@ -21,6 +21,19 @@ let CategoriesController = class CategoriesController {
     constructor(categoriesService) {
         this.categoriesService = categoriesService;
     }
+    validateApiKey(apiKey) {
+        const validApiKey = process.env.BUILD_SYNC_API_KEY;
+        if (!validApiKey) {
+            console.warn('BUILD_SYNC_API_KEY 환경변수가 설정되지 않았습니다. 개발 환경에서는 무시됩니다.');
+            if (process.env.NODE_ENV === 'production') {
+                throw new common_1.HttpException('API 키가 설정되지 않았습니다', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return;
+        }
+        if (!apiKey || apiKey !== validApiKey) {
+            throw new common_1.HttpException('유효하지 않은 API 키입니다', common_1.HttpStatus.UNAUTHORIZED);
+        }
+    }
     async getAllCategories() {
         try {
             const categories = await this.categoriesService.getAllCategories();
@@ -84,7 +97,8 @@ let CategoriesController = class CategoriesController {
             throw new common_1.HttpException('카테고리 조회 중 오류가 발생했습니다.', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async createCategory(createCategoryDto) {
+    async createCategory(apiKey, createCategoryDto) {
+        this.validateApiKey(apiKey);
         try {
             const category = await this.categoriesService.createCategory(createCategoryDto);
             return {
@@ -102,7 +116,8 @@ let CategoriesController = class CategoriesController {
             throw new common_1.HttpException('카테고리 생성 중 오류가 발생했습니다.', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async deleteCategory(id) {
+    async deleteCategory(apiKey, id) {
+        this.validateApiKey(apiKey);
         try {
             await this.categoriesService.deleteCategory(id);
             return {
@@ -143,16 +158,18 @@ __decorate([
 ], CategoriesController.prototype, "getCategoryByName", null);
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Headers)('x-api-key')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Function]),
+    __metadata("design:paramtypes", [String, Function]),
     __metadata("design:returntype", Promise)
 ], CategoriesController.prototype, "createCategory", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(0, (0, common_1.Headers)('x-api-key')),
+    __param(1, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [String, Number]),
     __metadata("design:returntype", Promise)
 ], CategoriesController.prototype, "deleteCategory", null);
 exports.CategoriesController = CategoriesController = __decorate([

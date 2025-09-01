@@ -3,6 +3,7 @@ import type { CreateCategoryDto } from './dto/category.dto';
 export declare class CategoriesController {
     private readonly categoriesService;
     constructor(categoriesService: CategoriesService);
+    private validateApiKey;
     getAllCategories(): Promise<{
         ok: boolean;
         status: number;
@@ -42,7 +43,7 @@ export declare class CategoriesController {
             created_at: Date | null;
         };
     }>;
-    createCategory(createCategoryDto: CreateCategoryDto): Promise<{
+    createCategory(apiKey: string, createCategoryDto: CreateCategoryDto): Promise<{
         ok: boolean;
         status: number;
         data: {
@@ -52,7 +53,7 @@ export declare class CategoriesController {
         };
         message: string;
     }>;
-    deleteCategory(id: number): Promise<{
+    deleteCategory(apiKey: string, id: number): Promise<{
         ok: boolean;
         status: number;
         message: string;

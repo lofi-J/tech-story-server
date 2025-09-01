@@ -21,7 +21,21 @@ let PostsController = class PostsController {
     constructor(postsService) {
         this.postsService = postsService;
     }
-    async upsertPost(createPostDto) {
+    validateApiKey(apiKey) {
+        const validApiKey = process.env.BUILD_SYNC_API_KEY;
+        if (!validApiKey) {
+            console.warn('BUILD_SYNC_API_KEY 환경변수가 설정되지 않았습니다. 개발 환경에서는 무시됩니다.');
+            if (process.env.NODE_ENV === 'production') {
+                throw new common_1.HttpException('API 키가 설정되지 않았습니다', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return;
+        }
+        if (!apiKey || apiKey !== validApiKey) {
+            throw new common_1.HttpException('유효하지 않은 API 키입니다', common_1.HttpStatus.UNAUTHORIZED);
+        }
+    }
+    async upsertPost(apiKey, createPostDto) {
+        this.validateApiKey(apiKey);
         try {
             console.log('받은 데이터:', createPostDto);
             const post = await this.postsService.upsertPost(createPostDto);
@@ -38,7 +52,8 @@ let PostsController = class PostsController {
             throw new common_1.HttpException('포스트 처리 실패', common_1.HttpStatus.BAD_REQUEST);
         }
     }
-    async bulkUpsertPosts(posts) {
+    async bulkUpsertPosts(apiKey, posts) {
+        this.validateApiKey(apiKey);
         try {
             const results = await Promise.all(posts.map((post) => this.postsService.upsertPost(post)));
             return {
@@ -164,16 +179,18 @@ let PostsController = class PostsController {
 exports.PostsController = PostsController;
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Headers)('x-api-key')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Function]),
+    __metadata("design:paramtypes", [String, Function]),
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "upsertPost", null);
 __decorate([
     (0, common_1.Put)('bulk'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Headers)('x-api-key')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
+    __metadata("design:paramtypes", [String, Array]),
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "bulkUpsertPosts", null);
 __decorate([
