@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/types/session.types.ts"],"sourcesContent":["import 'express-session';\n\ndeclare module 'express-session' {\n  interface SessionData {\n    viewedPosts?: string[];\n    likedPosts?: string[];\n  }\n}\n"],"names":[],"mappings":";;;;QAAO"}

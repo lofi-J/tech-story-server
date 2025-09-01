@@ -1,5 +1,5 @@
 # compiled output
-# /dist build error로 주석 처리 serverless 배포시에 사용
+/dist
 /node_modules
 /build
 

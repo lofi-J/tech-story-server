@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/tags/dto/create-tag.input.ts"],"sourcesContent":["import { Field, InputType } from '@nestjs/graphql';\n\n@InputType()\nexport class CreateTagInput {\n  @Field()\n  tag_name: string;\n}\n"],"names":["CreateTagInput"],"mappings":";;;;+BAGaA;;;eAAAA;;;yBAHoB;;;;;;;;;;AAG1B,IAAA,AAAMA,iBAAN,MAAMA;AAGb"}
