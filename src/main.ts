@@ -17,27 +17,33 @@ async function bootstrap() {
     }
   }
 
+  // 세션 미들웨어를 한 번만 생성
+  const sessionMiddleware = session({
+    secret: sessionSecret || 'dev-fallback-secret-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    name: 'jera_s',
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 6 * 60 * 60 * 1000, // 6 hours
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+    },
+  });
+
+  // build-sync API는 세션 미들웨어에서 제외
   app.use((req: any, res: any, next: any) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     if (req.path && req.path.startsWith('/api/build-sync/')) {
       // build-sync API는 세션 없이 진행
+      console.log('build-sync API: 세션 미들웨어 건너뛰기');
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
       return next();
     }
 
     // 일반 API는 세션 미들웨어 적용
-    return session({
-      secret: sessionSecret || 'dev-fallback-secret-change-in-production',
-      resave: false,
-      saveUninitialized: false,
-      name: 'jera_s',
-      cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        maxAge: 6 * 60 * 60 * 1000, // 6 hours
-        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-      },
-    })(req, res, next);
+    console.log('일반 API: 세션 미들웨어 적용');
+    return sessionMiddleware(req, res, next);
   });
 
   // Global validation pipe

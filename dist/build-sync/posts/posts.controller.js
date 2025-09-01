@@ -26,22 +26,7 @@ function _ts_param(paramIndex, decorator) {
     };
 }
 let PostsController = class PostsController {
-    // API 키 검증 메서드
-    validateApiKey(apiKey) {
-        const validApiKey = process.env.BUILD_SYNC_API_KEY;
-        if (!validApiKey) {
-            console.warn('BUILD_SYNC_API_KEY 환경변수가 설정되지 않았습니다. 개발 환경에서는 무시됩니다.');
-            if (process.env.NODE_ENV === 'production') {
-                throw new _common.HttpException('API 키가 설정되지 않았습니다', _common.HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            return; // 개발 환경에서는 API 키 없이도 허용
-        }
-        if (!apiKey || apiKey !== validApiKey) {
-            throw new _common.HttpException('유효하지 않은 API 키입니다', _common.HttpStatus.UNAUTHORIZED);
-        }
-    }
-    async upsertPost(apiKey, createPostDto) {
-        this.validateApiKey(apiKey);
+    async upsertPost(createPostDto) {
         try {
             console.log('받은 데이터:', createPostDto);
             const post = await this.postsService.upsertPost(createPostDto);
@@ -56,8 +41,7 @@ let PostsController = class PostsController {
             throw new _common.HttpException('포스트 처리 실패', _common.HttpStatus.BAD_REQUEST);
         }
     }
-    async bulkUpsertPosts(apiKey, posts) {
-        this.validateApiKey(apiKey);
+    async bulkUpsertPosts(posts) {
         try {
             const results = await Promise.all(posts.map((post)=>this.postsService.upsertPost(post)));
             return {
@@ -175,22 +159,18 @@ let PostsController = class PostsController {
 };
 _ts_decorate([
     (0, _common.Post)(),
-    _ts_param(0, (0, _common.Headers)('x-api-key')),
-    _ts_param(1, (0, _common.Body)()),
+    _ts_param(0, (0, _common.Body)()),
     _ts_metadata("design:type", Function),
     _ts_metadata("design:paramtypes", [
-        String,
         typeof CreatePostDto === "undefined" ? Object : CreatePostDto
     ]),
     _ts_metadata("design:returntype", Promise)
 ], PostsController.prototype, "upsertPost", null);
 _ts_decorate([
     (0, _common.Put)('bulk'),
-    _ts_param(0, (0, _common.Headers)('x-api-key')),
-    _ts_param(1, (0, _common.Body)()),
+    _ts_param(0, (0, _common.Body)()),
     _ts_metadata("design:type", Function),
     _ts_metadata("design:paramtypes", [
-        String,
         Array
     ]),
     _ts_metadata("design:returntype", Promise)

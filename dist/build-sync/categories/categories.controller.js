@@ -26,20 +26,6 @@ function _ts_param(paramIndex, decorator) {
     };
 }
 let CategoriesController = class CategoriesController {
-    // API 키 검증 메서드
-    validateApiKey(apiKey) {
-        const validApiKey = process.env.BUILD_SYNC_API_KEY;
-        if (!validApiKey) {
-            console.warn('BUILD_SYNC_API_KEY 환경변수가 설정되지 않았습니다. 개발 환경에서는 무시됩니다.');
-            if (process.env.NODE_ENV === 'production') {
-                throw new _common.HttpException('API 키가 설정되지 않았습니다', _common.HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            return; // 개발 환경에서는 API 키 없이도 허용
-        }
-        if (!apiKey || apiKey !== validApiKey) {
-            throw new _common.HttpException('유효하지 않은 API 키입니다', _common.HttpStatus.UNAUTHORIZED);
-        }
-    }
     async getAllCategories() {
         try {
             const categories = await this.categoriesService.getAllCategories();
@@ -100,8 +86,7 @@ let CategoriesController = class CategoriesController {
             throw new _common.HttpException('카테고리 조회 중 오류가 발생했습니다.', _common.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async createCategory(apiKey, createCategoryDto) {
-        this.validateApiKey(apiKey);
+    async createCategory(createCategoryDto) {
         try {
             const category = await this.categoriesService.createCategory(createCategoryDto);
             return {
@@ -118,8 +103,7 @@ let CategoriesController = class CategoriesController {
             throw new _common.HttpException('카테고리 생성 중 오류가 발생했습니다.', _common.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async deleteCategory(apiKey, id) {
-        this.validateApiKey(apiKey);
+    async deleteCategory(id) {
         try {
             await this.categoriesService.deleteCategory(id);
             return {
@@ -165,22 +149,18 @@ _ts_decorate([
 ], CategoriesController.prototype, "getCategoryByName", null);
 _ts_decorate([
     (0, _common.Post)(),
-    _ts_param(0, (0, _common.Headers)('x-api-key')),
-    _ts_param(1, (0, _common.Body)()),
+    _ts_param(0, (0, _common.Body)()),
     _ts_metadata("design:type", Function),
     _ts_metadata("design:paramtypes", [
-        String,
         typeof CreateCategoryDto === "undefined" ? Object : CreateCategoryDto
     ]),
     _ts_metadata("design:returntype", Promise)
 ], CategoriesController.prototype, "createCategory", null);
 _ts_decorate([
     (0, _common.Delete)(':id'),
-    _ts_param(0, (0, _common.Headers)('x-api-key')),
-    _ts_param(1, (0, _common.Param)('id', _common.ParseIntPipe)),
+    _ts_param(0, (0, _common.Param)('id', _common.ParseIntPipe)),
     _ts_metadata("design:type", Function),
     _ts_metadata("design:paramtypes", [
-        String,
         Number
     ]),
     _ts_metadata("design:returntype", Promise)
