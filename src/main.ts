@@ -9,9 +9,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Session configuration
+  const sessionSecret = process.env.SESSION_SECRET;
+  if (!sessionSecret) {
+    console.error('경고: SESSION_SECRET 환경변수가 설정되지 않았습니다!');
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('SESSION_SECRET 환경변수는 프로덕션에서 필수입니다!');
+    }
+  }
+
   app.use(
     session({
-      secret: process.env.SESSION_SECRET as string,
+      secret: sessionSecret || 'dev-fallback-secret-change-in-production',
       resave: false,
       saveUninitialized: false,
       name: 'jera_s',
@@ -37,7 +45,7 @@ async function bootstrap() {
   app.enableCors({
     origin:
       process.env.NODE_ENV === 'production'
-        ? undefined
+        ? process.env.FRONTEND_URL || true // 프로덕션에서는 FRONTEND_URL 환경변수 사용, 없으면 모든 origin 허용
         : [
             `http://${clientConfig().host}:${clientConfig().port}`,
             `https://${clientConfig().host}:${clientConfig().port}`,
