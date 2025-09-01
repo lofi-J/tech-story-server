@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { CategoriesModule as BuildSyncCategoriesModule } from './build-sync/categories/categories.module';
 import { PostsModule } from './build-sync/posts/posts.module';
 import { CategoriesModule } from './categories/categories.module';
+import { PostStatsModule } from './post-stats/post-stats.module';
 import { PostsModule as GraphQLPostsModule } from './posts/posts.module';
 import { PrismaService } from './prisma/prisma.service';
 import { SupabaseService } from './supabase/supabase.service';
@@ -28,6 +29,7 @@ import { TagsModule } from './tags/tags.module';
     CategoriesModule,
     PostsModule,
     GraphQLPostsModule,
+    PostStatsModule,
     TagsModule,
   ],
   controllers: [AppController],
