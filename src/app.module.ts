@@ -2,6 +2,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
+import type { Request, Response } from 'express';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CategoriesModule as BuildSyncCategoriesModule } from './build-sync/categories/categories.module';
@@ -24,6 +25,11 @@ import { TagsModule } from './tags/tags.module';
       autoSchemaFile: true,
       playground: true,
       sortSchema: true,
+      context: ({ req, res }: { req: Request; res: Response }) => ({
+        req,
+        res,
+        session: req.session,
+      }),
     }),
     BuildSyncCategoriesModule,
     CategoriesModule,

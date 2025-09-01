@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import session from 'express-session';
 import { AppModule } from './app.module';
 import { clientConfig } from './config/app-client-config';
+import './types/session.types';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
