@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   HttpException,
   HttpStatus,
   Param,
@@ -19,38 +18,8 @@ import { PostsService } from './posts.service';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
-  // API 키 검증 메서드
-  private validateApiKey(apiKey: string | undefined): void {
-    const validApiKey = process.env.BUILD_SYNC_API_KEY;
-
-    if (!validApiKey) {
-      console.warn(
-        'BUILD_SYNC_API_KEY 환경변수가 설정되지 않았습니다. 개발 환경에서는 무시됩니다.',
-      );
-      if (process.env.NODE_ENV === 'production') {
-        throw new HttpException(
-          'API 키가 설정되지 않았습니다',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-      return; // 개발 환경에서는 API 키 없이도 허용
-    }
-
-    if (!apiKey || apiKey !== validApiKey) {
-      throw new HttpException(
-        '유효하지 않은 API 키입니다',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-  }
-
   @Post()
-  async upsertPost(
-    @Headers('x-api-key') apiKey: string,
-    @Body() createPostDto: CreatePostDto,
-  ) {
-    this.validateApiKey(apiKey);
-
+  async upsertPost(@Body() createPostDto: CreatePostDto) {
     try {
       console.log('받은 데이터:', createPostDto);
 
@@ -69,11 +38,7 @@ export class PostsController {
   }
 
   @Put('bulk')
-  async bulkUpsertPosts(
-    @Headers('x-api-key') apiKey: string,
-    @Body() posts: CreatePostDto[],
-  ) {
-    this.validateApiKey(apiKey);
+  async bulkUpsertPosts(@Body() posts: CreatePostDto[]) {
     try {
       const results = await Promise.all(
         posts.map((post) => this.postsService.upsertPost(post)),

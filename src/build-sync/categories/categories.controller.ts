@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   HttpException,
   HttpStatus,
   Param,
@@ -17,31 +16,6 @@ import type { CreateCategoryDto } from './dto/category.dto';
 @Controller('api/build-sync/categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
-
-  // API 키 검증 메서드
-  private validateApiKey(apiKey: string | undefined): void {
-    const validApiKey = process.env.BUILD_SYNC_API_KEY;
-
-    if (!validApiKey) {
-      console.warn(
-        'BUILD_SYNC_API_KEY 환경변수가 설정되지 않았습니다. 개발 환경에서는 무시됩니다.',
-      );
-      if (process.env.NODE_ENV === 'production') {
-        throw new HttpException(
-          'API 키가 설정되지 않았습니다',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-      return; // 개발 환경에서는 API 키 없이도 허용
-    }
-
-    if (!apiKey || apiKey !== validApiKey) {
-      throw new HttpException(
-        '유효하지 않은 API 키입니다',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-  }
 
   @Get()
   async getAllCategories() {
@@ -126,11 +100,7 @@ export class CategoriesController {
   }
 
   @Post()
-  async createCategory(
-    @Headers('x-api-key') apiKey: string,
-    @Body() createCategoryDto: CreateCategoryDto,
-  ) {
-    this.validateApiKey(apiKey);
+  async createCategory(@Body() createCategoryDto: CreateCategoryDto) {
     try {
       const category =
         await this.categoriesService.createCategory(createCategoryDto);
@@ -153,11 +123,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
-  async deleteCategory(
-    @Headers('x-api-key') apiKey: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
-    this.validateApiKey(apiKey);
+  async deleteCategory(@Param('id', ParseIntPipe) id: number) {
     try {
       await this.categoriesService.deleteCategory(id);
       return {

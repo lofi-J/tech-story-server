@@ -8,7 +8,7 @@ import './types/session.types';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Session configuration
+  // Session configuration (build-sync API 제외)
   const sessionSecret = process.env.SESSION_SECRET;
   if (!sessionSecret) {
     console.error('경고: SESSION_SECRET 환경변수가 설정되지 않았습니다!');
@@ -17,8 +17,16 @@ async function bootstrap() {
     }
   }
 
-  app.use(
-    session({
+  app.use((req: any, res: any, next: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    if (req.path && req.path.startsWith('/api/build-sync/')) {
+      // build-sync API는 세션 없이 진행
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+      return next();
+    }
+
+    // 일반 API는 세션 미들웨어 적용
+    return session({
       secret: sessionSecret || 'dev-fallback-secret-change-in-production',
       resave: false,
       saveUninitialized: false,
@@ -29,8 +37,8 @@ async function bootstrap() {
         maxAge: 6 * 60 * 60 * 1000, // 6 hours
         sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
       },
-    }),
-  );
+    })(req, res, next);
+  });
 
   // Global validation pipe
   app.useGlobalPipes(

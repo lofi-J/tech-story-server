@@ -23,18 +23,23 @@ async function bootstrap() {
             throw new Error('SESSION_SECRET 환경변수는 프로덕션에서 필수입니다!');
         }
     }
-    app.use((0, _expresssession.default)({
-        secret: sessionSecret || 'dev-fallback-secret-change-in-production',
-        resave: false,
-        saveUninitialized: false,
-        name: 'jera_s',
-        cookie: {
-            secure: process.env.NODE_ENV === 'production',
-            httpOnly: true,
-            maxAge: 6 * 60 * 60 * 1000,
-            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
-        }
-    }));
+    // 프로덕션에서는 세션을 비활성화하거나 다른 저장소 사용
+    if (process.env.NODE_ENV !== 'production') {
+        app.use((0, _expresssession.default)({
+            secret: sessionSecret || 'dev-fallback-secret-change-in-production',
+            resave: false,
+            saveUninitialized: false,
+            name: 'jera_s',
+            cookie: {
+                secure: false,
+                httpOnly: true,
+                maxAge: 6 * 60 * 60 * 1000,
+                sameSite: 'lax'
+            }
+        }));
+    } else {
+        console.log('프로덕션 환경: 세션 미들웨어 비활성화됨 (build-sync API는 API 키 인증 사용)');
+    }
     // Global validation pipe
     app.useGlobalPipes(new _common.ValidationPipe({
         transform: true,
