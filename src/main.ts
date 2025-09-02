@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import session from 'express-session';
 import { AppModule } from './app.module';
-import { clientConfig } from './config/app-client-config';
 import './types/session.types';
 
 async function bootstrap() {
@@ -57,13 +57,11 @@ async function bootstrap() {
 
   // app configuration
   app.enableCors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? process.env.FRONTEND_URL || true // 프로덕션에서는 FRONTEND_URL 환경변수 사용, 없으면 모든 origin 허용
-        : [
-            `http://${clientConfig().host}:${clientConfig().port}`,
-            `https://${clientConfig().host}:${clientConfig().port}`,
-          ],
+    origin: [
+      `https://lofi-j.vercel.app`,
+      `http://https://tech-blog-client-git-main-lofi-js-projects.vercel.app:3000`,
+      `http://localhost:3000`,
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
