@@ -36,13 +36,11 @@ async function bootstrap() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     if (req.path && req.path.startsWith('/api/build-sync/')) {
       // build-sync API는 세션 없이 진행
-      console.log('build-sync API: 세션 미들웨어 건너뛰기');
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
       return next();
     }
 
     // 일반 API는 세션 미들웨어 적용
-    console.log('일반 API: 세션 미들웨어 적용');
     return sessionMiddleware(req, res, next);
   });
 
